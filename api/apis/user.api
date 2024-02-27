@@ -1,0 +1,63 @@
+syntax = "v1"
+info(
+    title: "用户管理"
+    desc: "用户管理"
+    author: "jun_w"
+    email: "709944968@qq.com"
+    version: "v1"
+)
+
+type UserInfo {
+    Id         int64              `json:"id"`
+    Username   string             `json:"username"`    //用户名
+    Password   string             `json:"password"`    //用户密码，MD5加密
+    Phone      string             `json:"phone"`       //手机号
+    Question   string             `json:"question"`    //找回密码问题
+    Answer     string             `json:"answer"`      //找回密码答案
+    CreateTime int64              `json:"createtime"`  //创建时间
+    UpdateTime int64              `json:"updatetime"`  //更新时间
+    Name       string             `json:"name"`        //姓名
+    Nick       string             `json:"nick"`        //昵称
+    Sex        string             `json:"sex"`         //性别  
+} 
+
+//用户登陆
+type LoginReq {
+    Username string `json:"username"`   //用户名
+	Password string `json:"password"`   //密码
+}
+
+type LoginRes {
+    AccessToken  string `json:"accessToken"`         //tocken
+    AccessExpire int64  `json:"accessExpire"`        //过期时间
+}
+//用户登陆
+
+//用户详情
+type (
+    UserInfoReq {
+    }
+    UserInfoRes {
+        UserInfo UserInfo `json:"userInfo"`         //用户信息
+    }
+)
+//用户详情
+
+//用户注册
+type (
+    UserRegisterReq {
+        Username string `json:"username"`   //用户名
+        Phone    string `json:"phone"`      //手机号
+	    Password string `json:"password"`   //密码
+    }
+    UserRegisterRes {
+    }
+)
+//用户注册
+
+
+
+
+
+
+

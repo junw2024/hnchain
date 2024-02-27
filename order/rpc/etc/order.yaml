@@ -1,0 +1,41 @@
+Name: order.rpc
+Log:
+  ServiceName: order
+  Mode: console
+ListenOn: 127.0.0.1:9003
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: order.rpc
+
+Postgres:
+  DataSource: postgres://hai:hai@127.0.0.1:5432/haidb?sslmode=disable
+  MaxIdleConns: 10
+  MaxOpenConns: 50
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+    Type: node
+    Pass: test
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+
+ProductRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: product.rpc
+
+BizRedis:
+  Host: 127.0.0.1:6379
+  Pass:
+  Type: node
+
+Telemetry:
+  Endpoint: http://127.0.0.1:14268/api/traces
+
+

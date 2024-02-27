@@ -1,0 +1,123 @@
+//分组 goctl rpc protoc product.proto --go_out=. --go-grpc_out=. --zrpc_out=. -m
+//goctl rpc protoc product.proto --go_out=. --go-grpc_out=. --zrpc_out=.
+
+syntax = "proto3";
+package product;
+option go_package ="./product";
+
+message ProductItem {
+    int64 productid=1;
+    string name=2;
+    string description=3;
+    string imageurl = 4;
+    int64 createtime=5;
+    int32 stock = 6;
+    int64 categoryid = 7;
+    double price = 8;
+    int32 status = 9;
+}
+
+message CategoryItem {
+    int64 categoryid =1;    //分类ID
+    string name=2;          //类名称
+}
+
+message CategoryItemReq {
+    int64 parentid=1;
+}
+message CategoryItemRsp {
+    repeated CategoryItem categorys=1;
+}
+
+
+message ProductItemReq {
+    int64 productid= 1;    //商品ID
+}
+
+message ProductReq {
+    string product_ids= 1; //商品ID集合使用','分割
+}
+
+message ProductRsp {
+    map<int64,ProductItem> products = 1;
+}
+
+message ProductListReq {
+    int64 categoryid=1;     //分类ID
+    int64 cursor=2;         //目前截止时间戳
+    int32 ps=3;             //页大小
+    int64 productid=4;      //商品ID
+}
+
+message ProductListRsp {
+    bool isEnd = 1;                   //商品数据是否结束
+    int64 timestamp = 2;              //当前页面最后时间戳
+    int64 productid = 3;              //当前页面最后ID
+    repeated ProductItem products=4;
+}
+
+message OperationProductsReq {
+
+}
+message OperationProductsRsp {
+    repeated ProductItem products=1;
+}
+
+message UpdateProductStockReq {
+    int64 productid =1;              //商品id
+    int32 num=2;                     //库存数量
+}
+message UpdateProductStockRsp {
+}
+
+message CheckAndUpdateStockReq {
+    int64 productid=1;             
+}
+message CheckAndUpdateStockRsp {
+}
+
+message DecrStockReq {
+    int64 id = 1;
+    int64 num = 2;
+}
+
+message DecrStockRsp {
+}
+
+message ProductRecommendReq {
+    int32 num=1;                       //数量
+}
+message ProductRecommendRsp {
+    repeated ProductItem products=1;   //推荐商品
+}
+
+service Product {
+    //查询产品信息
+    rpc Product(ProductItemReq) returns (ProductItem);
+    //查询集合的商品信息
+    rpc Products(ProductReq) returns (ProductRsp);
+    //查询指定分类的商品分页
+    rpc ProductList(ProductListReq) returns (ProductListRsp);
+    //刷新运营产品缓存
+    rpc OperationProducts(OperationProductsReq) returns (OperationProductsRsp);
+    //根据目标量，增加库存
+    rpc UpdateProductStock(UpdateProductStockReq) returns (UpdateProductStockRsp);
+    
+    //扣减库存(缓存)
+    rpc CheckAndUpdateStock(CheckAndUpdateStockReq) returns (CheckAndUpdateStockRsp);
+    //检查库存量
+    rpc CheckProductStock(UpdateProductStockReq) returns (UpdateProductStockRsp);
+    
+    rpc RollbackProductStock(UpdateProductStockReq) returns (UpdateProductStockRsp);
+    
+    //事务:扣减库存
+    rpc DecrStock(DecrStockReq) returns(DecrStockRsp);
+    //事务:扣减库存,再加回去
+    rpc DecrStockRevert(DecrStockReq) returns(DecrStockRsp);
+
+    //根据类父ID,查询分类列表
+    rpc CategoryList(CategoryItemReq) returns(CategoryItemRsp);
+   
+    //目标数量的推荐商品
+    rpc ProductRecommends(ProductRecommendReq) returns(ProductRecommendRsp);
+}

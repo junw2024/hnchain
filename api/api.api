@@ -1,0 +1,279 @@
+import (
+	"apis/userrevaddr.api"
+	"apis/user.api"
+	"apis/usercollection.api"
+	"apis/order.api"
+)
+
+//goctl api go  -api  api.api -dir .
+
+type (
+	Banner {
+		Id       int64  `json:"id"`
+		Name     string `json:"name"`     // 名称
+		Imageurl string `json:"imageurl"` // 图片地址
+	}
+
+	Product {
+		Id          int64    `json:"id"`
+		Name        string   `json:"name"`        //名称
+		Imageurl    string   `json:"imageurl"`    //主图
+		Images      []string `json:"images"`      //图片
+		Description string   `json:"description"` // 商品描述
+		Price       float64  `json:"price"`       // 商品价格
+		Stock       int32    `json:"stock"`       // 库存
+		Categoryid  int64    `json:"categoryid"`  // 分类
+		Status      int32    `json:"status"`      // 状态：1-正常，2-下架
+		Createtime  int64    `json:"createtime"`  // 创建时间
+		Updatetime  int64    `json:"updatetime"`  // 更新时间
+	}
+
+	Category {
+		Id       int64       `json:"id"`
+		Name     string      `json:"name"` //类名
+		Parentid int64       `json:"parentid"`
+		Childs   []*Category `json:"childs"` //孩子集合
+	}
+
+	CategoryReq {
+		Parentid int64 `json:"parentid"` //父类ID
+	}
+	CategoryRsp {
+		Categorys []*Category `json:"categorys"`
+	}
+
+	HomeBannerRsp {
+		Banners []*Banner `json:"banners"`
+	}
+
+	//秒杀商品
+	FlashSaleRsp {
+		Starttime int64      `json:"starttime"` //开始抢购时间
+		Products  []*Product `json:"products"`
+	}
+
+	//推荐商品
+	RecommendReq {
+		Cursor    int64 `json:"cursor"`        // 时间
+		Ps        int32 `json:"ps,default=20"` // 每页大小
+		Productid int64 `json:"productid"`     // 每页大小
+	}
+
+	RecommendRsp {
+		Products      []*Product `json:"products"`
+		IsEnd         bool       `json:"isEnd"`         // 是否最后一页
+		Recommendtime int64      `json:"recommendtime"` // 商品列表最后一个商品的推荐时间
+		Productid     int64      `json:"productid"`     // 每页大小
+	}
+
+	//商品分类
+	CategoryListReq {
+		Cursor     int64  `json:"cursor"`        // 分页游标
+		Ps         int32  `json:"ps,default=20"` // 每页大小
+		Categoryid int64  `json:"categoryid"`    // 分类
+		Productid  int64  `json:"productid"`
+		Sort       string `json:"sort"` // 排序
+	}
+
+	CategoryListRsp {
+		Products  []*Product `json:"products"`
+		IsEnd     bool       `json:"isEnd"`
+		LastVal   int64      `json:"lastVal"` //当页面最一个节点
+		Productid int64      `json:"productid"`
+	}
+
+	CartListReq {
+		Uid int64 `form:"uid"`
+	}
+
+	CartListRsp {
+		Products []*CartProduct `json:"products"`
+	}
+
+	CartProduct {
+		Product *Product `json:"product"`
+		Count   int32    `json:"count"` // 购买数量
+	}
+
+	ProductCommentReq {
+		Productid int64 `form:"productid"`
+		Cursor    int64 `form:"cursor"`
+		Ps        int32 `form:"ps,default=20"`
+	}
+
+	ProductCommentRsp {
+		Comments    []*Comment `json:"comments"`
+		IsEnd       bool       `json:"isEnd"`       // 是否最后一页
+		Commenttime int64      `json:"commenttime"` // 评论列表最后一个评论的时间
+	}
+
+	Comment {
+		Id         int64    `json:"id"`         // 评论ID
+		Productid  int64    `json:"productid"`  // 商品ID
+		Content    string   `json:"content"`    // 评论内容
+		Images     []*Image `json:"images"`     // 评论图片
+		User       *User    `json:"user"`       // 用户信息
+		Createtime int64    `json:"createtime"` // 评论时间
+		Updatetime int64    `json:"updatetime"` // 更新时间
+	}
+
+	User {
+		Id     int64  `json:"id"`     // 用户ID
+		Name   string `json:"name"`   // 用户名
+		Avatar string `json:"avatar"` // 头像
+	}
+
+	Image {
+		Id  int64  `json:"id"`
+		Url string `json:"url"`
+	}
+
+	OrderListReq {
+		Uid    int64 `form:"uid"`
+		Status int32 `form:"status,optional"`
+		Cursor int64 `form:"cursor,optional"`
+		Ps     int32 `form:"ps,default=20"`
+	}
+
+	OrderListRsp {
+		Orders    []*Order `json:"orders"`
+		IsEnd     bool     `json:"isend"` // 是否最后一页
+		Ordertime int64    `json:"ordertime"`
+	}
+
+	Order {
+		Id                 int64   `json:"id"`
+		Ordernum           string  `json:"ordernum"`
+		Status             int32   `json:"status"`
+		Quantity           int32   `json:"quantity"`
+		Payment            float64 `json:"payment"`
+		TotalPrice         float64 `json:"totalprice"`
+		Createtime         int64   `json:"createtime"`
+		Productid          int64   `json:"productid"`
+		Productname        string  `json:"productname"`
+		Productimage       string  `json:"productimage"`
+		ProductDescription string  `json:"product_description"`
+	}
+
+	ProductDetailReq {
+		Productid int64 `form:"productid"`
+	}
+
+	ProductDetailRsp {
+		Product  *Product   `json:"product"`
+		Comments []*Comment `json:"comments"`
+	}
+)
+
+//========================> mall v1 <===================================
+@server(
+	prefix: v1/mall
+	group: mall
+)
+service api-api {
+	@doc "首页Banner"
+	@handler HomeBannerHander
+	get /home/banner returns(HomeBannerRsp)
+	
+	@doc "限时抢购"
+	@handler FlashSaleHandler
+	get /flashsale returns(FlashSaleRsp)
+	
+	@doc "推荐商品列表"
+	@handler RecommendHandler
+	post /recommend(RecommendReq) returns(RecommendRsp)
+	
+	@doc "商品分类"
+	@handler Categorys
+	post /categorys (CategoryReq) returns(CategoryRsp)
+	
+	@doc "分类商品列表"
+	@handler CategoryListHandler
+	post /categoryList (CategoryListReq) returns (CategoryListRsp)
+	
+	@doc "购物车列表"
+	@handler CartListHandler
+	post /cartList (CartListReq) returns (CartListRsp)
+	
+	@doc "商品评论列表"
+	@handler ProductCommentHandler
+	post /product/comment (ProductCommentReq) returns (ProductCommentRsp)
+	
+	@doc "商品详情"
+	@handler ProductDetailHandler
+	get /product/detail (ProductDetailReq) returns (ProductDetailRsp)
+	
+}
+
+//========================> order v1 <===================================
+//need login
+@server(
+	prefix: v1/order
+	group: order
+	jwt: JwtAuth     //use jwt
+)
+service api-api {
+	@doc "add order"
+	@handler AddOrderHander
+	post /add (OrderAddReq) returns (OrderAddRsp)
+	
+	@doc "订单列表"
+	@handler OrderListHandler
+	get /list (OrderListReq) returns (OrderListRsp)
+}
+
+//========================> user v1 <===================================
+//no need login
+@server(
+	prefix: v1/user
+	group: user
+)
+service api-api {
+	@doc  "login"
+	@handler login
+	post /login (LoginReq) returns (LoginRes)
+	@doc "register"
+	@handler register
+	post /register (UserRegisterReq) returns (UserRegisterRes)
+}
+
+//need login
+@server(
+	prefix: v1/user
+	group: user
+	jwt: JwtAuth //use jwt
+)
+service api-api {
+	@doc  "get user info"
+	@handler detail
+	post /info (UserInfoReq) returns (UserInfoRes)
+	
+	@doc "add user receiveAddress"
+	@handler addReveAddr
+	post /addReveAddr (UserRevAddrAddReq) returns (UserRevAddrAddRes)
+	
+	@doc "edit user receiveAddress"
+	@handler editRevAddr
+	post /editRevAddr (UserRevAddrEditReq) returns (UserRevAddrEditRes)
+	
+	@doc "del user receiveAddress list"
+	@handler delRevAddress
+	post /delRevAddress (UserRevAddrDelReq) returns (UserRevAddrDelRes)
+	
+	@doc "get user receiveAddress list"
+	@handler userRevAddrList
+	get /userRevAddrList (UserRevAddrListReq) returns (UserRevAddrListRes)
+	
+	@doc "add user collection"
+	@handler userCollectionAdd
+	post /addCollection (UserCollectionAddReq) returns (UserCollectionAddRes)
+	
+	@doc "del user collection"
+	@handler userCollectionDel
+	post /delCollection (UserCollectionDelReq) returns (UserCollectionDelRes)
+	
+	@doc "get user collection list"
+	@handler userCollectionList
+	get /getCollectionList (UserCollectionListReq) returns (UserCollectionListRes)
+	
+}

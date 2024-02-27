@@ -1,0 +1,24 @@
+Name: user.rpc
+Log:
+  ServiceName: user
+  Mode: console
+ListenOn: 127.0.0.1:9001
+Mode: dev
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: user.rpc
+
+Postgres:
+  DataSource: postgres://hai:hai@127.0.0.1:5432/haidb?sslmode=disable
+  MaxIdleConns: 10
+  MaxOpenConns: 50
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+    Type: node
+    Pass: test
+
+#用户密码加密时使用
+Salt: HWVOFkGgPTryzICwd7qnJaZR9KQ2i8xe 
+

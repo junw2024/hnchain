@@ -1,0 +1,38 @@
+syntax = "v1"
+
+info(
+	title: "用户收藏"
+	desc: "用户收藏"
+	author: "jun_w"
+	email: "709944968@163.com"
+	version: "v1"
+)
+
+// 添加收藏
+type (
+    UserCollectionAddReq {
+        Productid  int64    `json:"productid"`  // 商品id
+    }
+    UserCollectionAddRes {}
+)
+// 添加收藏
+
+// 删除收藏
+type (
+    UserCollectionDelReq {
+        Id         int64    `json:"id"`          // 收藏Id
+    }
+    UserCollectionDelRes {}
+)
+// 删除收藏
+
+// 收藏列表
+type(
+    UserCollectionListReq{
+
+    }
+    UserCollectionListRes {
+        Productid []int64    `json:"productid"`  // 商品id
+    }
+)
+// 收藏列表

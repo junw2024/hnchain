@@ -1,0 +1,78 @@
+syntax= "v1"
+info(
+    title: "用户收获地址管理"
+	desc: "用户收获地址管理"
+	author: "jun_w"
+	email: "709944968@qq.com"
+	version: "v1"
+)
+type UserRevAddr {
+	Id            int64  `json:"id"`
+	Uid           uint64 `json:"uid"`            //用户id
+	Name          string `json:"name"`           //收货人名称
+	Phone         string `json:"phone"`          //手机号
+	Isdefault     bool  `json:"isdefault"`      //是否为默认地址
+	Postcode      string `json:"postcode"`      //邮政编码
+	Province      string `json:"province"`       //省份/直辖市
+	City          string `json:"city"`           //城市
+	Region        string `json:"region"`         //区
+	DetailAddress string `json:"detailaddress"` //详细地址(街道)
+	Isdelete      bool   `json:"isdelete"`      //是否删除
+	CreateTime    int64  `json:"createtime"`    //数据创建时间
+	UpdateTime    int64  `json:"updatetime"`    //数据更新时间
+}
+
+// 获取用户收货地址列表
+type (
+	UserRevAddrListReq {
+	}
+	UserRevAddrListRes {
+		list []UserRevAddr `json:"list"`
+	}
+)
+// 获取用户收货地址列表
+
+// 添加用户收货地址
+type (
+	UserRevAddrAddReq {
+		Name          string `json:"name"`           //收货人名称
+		Phone         string `json:"phone"`          //手机号
+		Isdefault     bool   `json:"isdefault"`     //是否为默认地址
+		Postcode      string `json:"postcode"`      //邮政编码
+		Province      string `json:"province"`       //省份/直辖市
+		City          string `json:"city"`           //城市
+		Region        string `json:"region"`         //区
+		DetailAddress string `json:"detailaddress"` //详细地址(街道)
+	}
+	UserRevAddrAddRes {
+	}
+)
+// 添加用户收货地址
+
+// 编辑用户收货地址
+type (
+	UserRevAddrEditReq {
+		Id            int64  `json:"id"`
+		Name          string `json:"name"`           //收货人名称
+		Phone         string `json:"phone"`          //手机号
+		IsDefault     bool  `json:"isdefault"`     //是否为默认地址
+		PostCode      string `json:"postcode"`      //邮政编码
+		Province      string `json:"province"`       //省份/直辖市
+		City          string `json:"city"`           //城市
+		Region        string `json:"region"`         //区
+		DetailAddress string `json:"detailaddress"`  //详细地址(街道)
+	}
+	UserRevAddrEditRes {
+	}
+)
+// 编辑用户收货地址
+
+// 删除用户收货地址
+type (
+	UserRevAddrDelReq {
+		Id int64 `json:"id"`
+	}
+	UserRevAddrDelRes {
+	}
+)
+// 删除用户收货地址

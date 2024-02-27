@@ -1,0 +1,99 @@
+syntax = "proto3";
+package order;
+option go_package = "./order";
+
+//分组 goctl rpc protoc order.proto --go_out=. --go-grpc_out=. --zrpc_out=. -m
+//goctl rpc protoc order.proto --go_out=. --go-grpc_out=. --zrpc_out=.
+
+//订单详情
+message Orderitem{
+  int64  id = 1;           //详情ID
+  string ordernum = 2;     //订单号 
+  int64  userid = 3;       //用户ID
+  int64  productid = 4;    //商品ID
+  string productname = 5;  //商品名称
+  string productimage = 6;  //商品图片
+  double currentprice = 7; //商品成交价格
+  int32 quantity = 8;          //购买数量
+  double totalprice = 9;       //总成交价
+  int64 createTime = 10;       //时间
+  int64 updateTime = 11;       //时间 
+}
+message OrdersReq {
+    int64 userid = 1; //用户Id
+    int32 status = 2; //订单状态
+    int64 cursor = 3; //分页时间戳
+    int64 orderitemid=4; //最后ID
+    int32 ps = 5;       //页大小
+}
+
+message OrdersRsp {
+    repeated Orderitem orderitems = 1;
+    bool isEnd = 2;
+    int64 lastTime = 3;
+    int64 lastId=4;
+}
+
+
+message CreateOrderReq {
+    int64  userid = 1;  //用户ID
+    int64 productid = 2; //商品ID
+}
+
+message CreateOrderRsp{
+
+}
+
+message Orders {
+    int64  id=1;
+    string ordernum = 2; //订单号
+    int64 userid = 3;    //用户ID
+    int64 shoppingid = 4; //收货地址
+    double payment = 5;   //支付
+    int32 paymenttype = 6; //支付类型
+    double postage = 7;     //运费
+    int32 status = 8;      //订单状态
+    int64 createTime = 9;  
+    int64 updateTime = 10;
+}
+
+message AddOrderReq {
+    int64 userid = 1;
+    int64 productid = 2;
+    int32 quantity = 3;
+    double postage = 4;
+    int64 receiveAddrId = 5;
+    string ordernum=6;
+}
+message AddOrderRsp { 
+    string ordernum = 1; //订单号
+}
+
+message GetOrderByOrdernumReq {
+    string ordernum = 1; //订单号
+}
+  
+message GetOrderByOrdernumRsp {
+    Orders orders = 1;   //order
+}
+
+
+service order {
+    //个人订单分页
+    rpc Orders(OrdersReq) returns(OrdersRsp);
+    //创建订单
+    rpc CreateOrder(CreateOrderReq) returns (CreateOrderRsp);
+    //订单创建验证
+    rpc CreateOrderCheck(CreateOrderReq) returns (CreateOrderRsp);
+    //回滚订单
+    rpc RollbackOrder (CreateOrderReq) returns (CreateOrderRsp);
+    //创建订单try
+    rpc CreateOrderDTM(AddOrderReq) returns (AddOrderRsp);
+    //回撤
+    rpc CreateOrderDTMRevert(AddOrderReq) returns(AddOrderRsp);
+    rpc GetOrderByOrdernum(GetOrderByOrdernumReq) returns (GetOrderByOrdernumRsp);
+}
+
+
+
+

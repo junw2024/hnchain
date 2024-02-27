@@ -1,0 +1,34 @@
+#创建
+docker network create --subnet 172.18.0.0/16 --gateway 172.18.0.1  mynetwork
+
+#查看
+docker inspect mynetwork
+
+#macos查看挂载目录 
+docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
+
+#桥接网络
+docker create volumes etcdv
+
+docker network create --driver=bridge --subnet=172.19.0.0/16 --gateway=172.19.0.1 mynet
+docker run --name postgres  -e POSTGRES_PASSWORD=postgres -p 5432:5432 --network mynet --ip 172.19.0.2   -v pgdata:/var/lib/postgresql/data -d jun_w/postgres:latest
+
+docker run --name etcd  -p 2379:2379 -p 2380:2380 --network mynet --ip 172.19.0.3   -v etcdv:/data -d jun_w/etcd:3.5.12
+
+docker run --name redis-master  -p 6379:6379 --network mynet --ip 172.19.0.4   -v redisv:/data -d jun_w/redis:5.0.4
+
+
+
+
+docker run -d -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 -p5775:5775/udp -p6831:6831/udp -p6832:6832/udp -p5778:5778 -p16686:16686 -p14268:14268  -p9411:9411 jaegertracing/all-in-one:latest
+
+
+go run -ldflags "-X 'runtime.memstats.heapmaxbytes=104857600'" user.go
+go run -ldflags "-X 'runtime.memstats.heapmaxbytes=104857600'" product.go
+go run -ldflags "-X 'runtime.memstats.heapmaxbytes=104857600'" order.go
+go run -ldflags "-X 'runtime.memstats.heapmaxbytes=50485760'" reply.go
+
+go run -ldflags "-X 'runtime.memstats.heapmaxbytes=104857600'" api.go
+
+
+
