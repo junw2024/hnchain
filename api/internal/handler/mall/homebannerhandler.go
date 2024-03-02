@@ -8,10 +8,10 @@ import (
 	"hnchain/api/internal/svc"
 )
 
-func HomeBannerHanderHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func HomeBannerHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		l := mall.NewHomeBannerHanderLogic(r.Context(), svcCtx)
-		resp, err := l.HomeBannerHander()
+		l := mall.NewHomeBannerLogic(r.Context(), svcCtx)
+		resp, err := l.HomeBanner()
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

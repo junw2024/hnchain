@@ -3,8 +3,6 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"hnchain/common/distributedid"
 	"hnchain/common/xerr"
 	"hnchain/order/rpc/internal/svc"
 	"hnchain/order/rpc/model"
@@ -90,7 +88,7 @@ func (l *CreateOrderDTMLogic) CreateOrderDTM(in *order.AddOrderReq) (*order.AddO
 		return nil, errors.Wrap(xerr.NewErrCode(xerr.DataNoExistError), "error! product not exist exception")
 	}
 	//检查库存
-	if productRpcRs.Stock <= 0 {
+	if productRpcRs.Stock < in.Quantity {
 		return nil, errors.Wrapf(xerr.NewErrMsg("product understock"), "product understock")
 	}
 
@@ -98,8 +96,7 @@ func (l *CreateOrderDTMLogic) CreateOrderDTM(in *order.AddOrderReq) (*order.AddO
 		return nil, errors.Wrap(xerr.NewErrCode(xerr.DataNoExistError), "error! receiveAddr not exist exception")
 	}
 
-	//generate new ordernum
-	ordernum := genOrdernum()
+	ordernum := in.Ordernum
 	//db
 	db, err := postgres.New(l.svcCtx.Config.Postgres.DataSource).RawDB()
 	if err != nil {
@@ -186,7 +183,4 @@ func (l *CreateOrderDTMLogic) CreateOrderDTM(in *order.AddOrderReq) (*order.AddO
 	return &order.AddOrderRsp{Ordernum: ordernum}, nil
 }
 
-func genOrdernum() string {
-	idgenerator := distributedid.NewSnowflake(int64(1))
-	return fmt.Sprintf("%s-%d", time.Now().Format("20060102"), idgenerator.GenerateId())
-}
+

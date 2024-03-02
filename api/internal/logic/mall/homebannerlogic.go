@@ -1,4 +1,4 @@
-package order
+package mall
 
 import (
 	"context"
@@ -9,21 +9,21 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type AddOrderHanderLogic struct {
+type HomeBannerLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewAddOrderHanderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddOrderHanderLogic {
-	return &AddOrderHanderLogic{
+func NewHomeBannerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *HomeBannerLogic {
+	return &HomeBannerLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *AddOrderHanderLogic) AddOrderHander(req *types.OrderAddReq) (resp *types.OrderAddRsp, err error) {
+func (l *HomeBannerLogic) HomeBanner() (resp *types.HomeBannerRsp, err error) {
 	// todo: add your logic here and delete this line
 
 	return

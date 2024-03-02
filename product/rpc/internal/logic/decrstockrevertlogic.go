@@ -46,8 +46,9 @@ func (l *DecrStockRevertLogic) DecrStockRevert(in *product.DecrStockReq) (*produ
 
 	// 开启子事务屏障
 	err = barrier.CallWithDB(db, func(tx *sql.Tx) error {
+		var num int =int(in.Num)
 		//更新产品库存
-		_, err := l.svcCtx.ProductModel.TxUpdateStock(tx, in.Id, 1)
+		_, err := l.svcCtx.ProductModel.TxUpdateStock(tx, in.Id, num)
 		return err
 	})
 	if err != nil {

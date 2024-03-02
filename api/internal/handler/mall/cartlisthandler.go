@@ -2,7 +2,6 @@ package mall
 
 import (
 	"net/http"
-
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"hnchain/api/internal/logic/mall"
 	"hnchain/api/internal/svc"

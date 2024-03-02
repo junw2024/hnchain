@@ -16,24 +16,9 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
-				Method:  http.MethodGet,
-				Path:    "/home/banner",
-				Handler: mall.HomeBannerHanderHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/flashsale",
-				Handler: mall.FlashSaleHandler(serverCtx),
-			},
-			{
 				Method:  http.MethodPost,
-				Path:    "/recommend",
-				Handler: mall.RecommendHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/categorys",
-				Handler: mall.CategorysHandler(serverCtx),
+				Path:    "/cartList",
+				Handler: mall.CartListHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -42,8 +27,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/cartList",
-				Handler: mall.CartListHandler(serverCtx),
+				Path:    "/categorys",
+				Handler: mall.CategorysHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/flashsale",
+				Handler: mall.FlashSaleHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/home/banner",
+				Handler: mall.HomeBannerHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -55,6 +50,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/product/detail",
 				Handler: mall.ProductDetailHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/recommend",
+				Handler: mall.RecommendHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/v1/mall"),
 	)
@@ -64,7 +64,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodPost,
 				Path:    "/add",
-				Handler: order.AddOrderHanderHandler(serverCtx),
+				Handler: order.AddOrderHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
@@ -96,8 +96,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/info",
-				Handler: user.DetailHandler(serverCtx),
+				Path:    "/addCollection",
+				Handler: user.UserCollectionAddHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -106,8 +106,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/editRevAddr",
-				Handler: user.EditRevAddrHandler(serverCtx),
+				Path:    "/delCollection",
+				Handler: user.UserCollectionDelHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -115,24 +115,24 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: user.DelRevAddressHandler(serverCtx),
 			},
 			{
-				Method:  http.MethodGet,
-				Path:    "/userRevAddrList",
-				Handler: user.UserRevAddrListHandler(serverCtx),
-			},
-			{
 				Method:  http.MethodPost,
-				Path:    "/addCollection",
-				Handler: user.UserCollectionAddHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/delCollection",
-				Handler: user.UserCollectionDelHandler(serverCtx),
+				Path:    "/editRevAddr",
+				Handler: user.EditRevAddrHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/getCollectionList",
 				Handler: user.UserCollectionListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/info",
+				Handler: user.DetailHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/userRevAddrList",
+				Handler: user.UserRevAddrListHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),

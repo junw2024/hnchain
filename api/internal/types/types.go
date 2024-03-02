@@ -7,18 +7,17 @@ type Banner struct {
 	Imageurl string `json:"imageurl"` // 图片地址
 }
 
-type Product struct {
-	Id          int64    `json:"id"`
-	Name        string   `json:"name"`        //名称
-	Imageurl    string   `json:"imageurl"`    //主图
-	Images      []string `json:"images"`      //图片
-	Description string   `json:"description"` // 商品描述
-	Price       float64  `json:"price"`       // 商品价格
-	Stock       int32    `json:"stock"`       // 库存
-	Categoryid  int64    `json:"categoryid"`  // 分类
-	Status      int32    `json:"status"`      // 状态：1-正常，2-下架
-	Createtime  int64    `json:"createtime"`  // 创建时间
-	Updatetime  int64    `json:"updatetime"`  // 更新时间
+type CartListReq struct {
+	Uid int64 `form:"uid"`
+}
+
+type CartListRsp struct {
+	Products []*CartProduct `json:"products"`
+}
+
+type CartProduct struct {
+	Product *Product `json:"product"`
+	Count   int32    `json:"count"` // 购买数量
 }
 
 type Category struct {
@@ -26,36 +25,6 @@ type Category struct {
 	Name     string      `json:"name"` //类名
 	Parentid int64       `json:"parentid"`
 	Childs   []*Category `json:"childs"` //孩子集合
-}
-
-type CategoryReq struct {
-	Parentid int64 `json:"parentid"` //父类ID
-}
-
-type CategoryRsp struct {
-	Categorys []*Category `json:"categorys"`
-}
-
-type HomeBannerRsp struct {
-	Banners []*Banner `json:"banners"`
-}
-
-type FlashSaleRsp struct {
-	Starttime int64      `json:"starttime"` //开始抢购时间
-	Products  []*Product `json:"products"`
-}
-
-type RecommendReq struct {
-	Cursor    int64 `json:"cursor"`        // 时间
-	Ps        int32 `json:"ps,default=20"` // 每页大小
-	Productid int64 `json:"productid"`     // 每页大小
-}
-
-type RecommendRsp struct {
-	Products      []*Product `json:"products"`
-	IsEnd         bool       `json:"isEnd"`         // 是否最后一页
-	Recommendtime int64      `json:"recommendtime"` // 商品列表最后一个商品的推荐时间
-	Productid     int64      `json:"productid"`     // 每页大小
 }
 
 type CategoryListReq struct {
@@ -73,29 +42,12 @@ type CategoryListRsp struct {
 	Productid int64      `json:"productid"`
 }
 
-type CartListReq struct {
-	Uid int64 `form:"uid"`
+type CategoryReq struct {
+	Parentid int64 `json:"parentid"` //父类ID
 }
 
-type CartListRsp struct {
-	Products []*CartProduct `json:"products"`
-}
-
-type CartProduct struct {
-	Product *Product `json:"product"`
-	Count   int32    `json:"count"` // 购买数量
-}
-
-type ProductCommentReq struct {
-	Productid int64 `form:"productid"`
-	Cursor    int64 `form:"cursor"`
-	Ps        int32 `form:"ps,default=20"`
-}
-
-type ProductCommentRsp struct {
-	Comments    []*Comment `json:"comments"`
-	IsEnd       bool       `json:"isEnd"`       // 是否最后一页
-	Commenttime int64      `json:"commenttime"` // 评论列表最后一个评论的时间
+type CategoryRsp struct {
+	Categorys []*Category `json:"categorys"`
 }
 
 type Comment struct {
@@ -108,10 +60,13 @@ type Comment struct {
 	Updatetime int64    `json:"updatetime"` // 更新时间
 }
 
-type User struct {
-	Id     int64  `json:"id"`     // 用户ID
-	Name   string `json:"name"`   // 用户名
-	Avatar string `json:"avatar"` // 头像
+type FlashSaleRsp struct {
+	Starttime int64      `json:"starttime"` //开始抢购时间
+	Products  []*Product `json:"products"`
+}
+
+type HomeBannerRsp struct {
+	Banners []*Banner `json:"banners"`
 }
 
 type Image struct {
@@ -119,17 +74,14 @@ type Image struct {
 	Url string `json:"url"`
 }
 
-type OrderListReq struct {
-	Uid    int64 `form:"uid"`
-	Status int32 `form:"status,optional"`
-	Cursor int64 `form:"cursor,optional"`
-	Ps     int32 `form:"ps,default=20"`
+type LoginReq struct {
+	Username string `json:"username"` //用户名
+	Password string `json:"password"` //密码
 }
 
-type OrderListRsp struct {
-	Orders    []*Order `json:"orders"`
-	IsEnd     bool     `json:"isend"` // 是否最后一页
-	Ordertime int64    `json:"ordertime"`
+type LoginRes struct {
+	AccessToken  string `json:"accessToken"`  //tocken
+	AccessExpire int64  `json:"accessExpire"` //过期时间
 }
 
 type Order struct {
@@ -146,6 +98,77 @@ type Order struct {
 	ProductDescription string  `json:"product_description"`
 }
 
+type OrderAddReq struct {
+	RevAddrId int64   `json:"RevAddrId"` //用户收货地址表id
+	Postage   float64 `json:"postage"`   //运费,单位是元
+	Productid int64   `json:"productid"` //商品id
+	Quantity  int32   `json:"quantity"`  //商品数量
+}
+
+type OrderAddRsp struct {
+	Ordernum string `json:"ordernum"` //订单号
+}
+
+type OrderInfoReq struct {
+	Ordernum string `json:"ordernum"` //订单号
+}
+
+type OrderInfoResp struct {
+	OrderInfo Orders `json:"orderInfo"` //订单详情
+}
+
+type OrderListReq struct {
+	Uid    int64 `form:"uid"`
+	Status int32 `form:"status,optional"`
+	Cursor int64 `form:"cursor,optional"`
+	Ps     int32 `form:"ps,default=20"`
+}
+
+type OrderListRsp struct {
+	Orders    []*Order `json:"orders"`
+	IsEnd     bool     `json:"isend"` // 是否最后一页
+	Ordertime int64    `json:"ordertime"`
+}
+
+type Orders struct {
+	Id          int64   `json:"id"`          //订单id
+	Ordernum    string  `json:"ordernum"`    //订单号
+	Userid      uint64  `json:"userid"`      //用户id
+	Shoppingid  int64   `json:"shoppingid"`  //收货信息表id
+	Payment     float64 `json:"payment"`     //实际付款金额,单位是元,保留两位小数
+	Paymenttype int32   `json:"paymenttype"` //支付类型,1-在线支付
+	Postage     float64 `json:"postage"`     //运费,单位是元
+	Status      int32   `json:"status"`      //订单状态:0-已取消-10-未付款，20-已付款，30-待发货 40-待收货，50-交易成功，60-交易关闭
+	Createtime  int64   `json:"createtime"`  //创建时间
+	Updatetime  int64   `json:"updatetime"`  //更新时间
+}
+
+type Product struct {
+	Id          int64    `json:"id"`
+	Name        string   `json:"name"`        //名称
+	Imageurl    string   `json:"imageurl"`    //主图
+	Images      []string `json:"images"`      //图片
+	Description string   `json:"description"` // 商品描述
+	Price       float64  `json:"price"`       // 商品价格
+	Stock       int32    `json:"stock"`       // 库存
+	Categoryid  int64    `json:"categoryid"`  // 分类
+	Status      int32    `json:"status"`      // 状态：1-正常，2-下架
+	Createtime  int64    `json:"createtime"`  // 创建时间
+	Updatetime  int64    `json:"updatetime"`  // 更新时间
+}
+
+type ProductCommentReq struct {
+	Productid int64 `form:"productid"`
+	Cursor    int64 `form:"cursor"`
+	Ps        int32 `form:"ps,default=20"`
+}
+
+type ProductCommentRsp struct {
+	Comments    []*Comment `json:"comments"`
+	IsEnd       bool       `json:"isEnd"`       // 是否最后一页
+	Commenttime int64      `json:"commenttime"` // 评论列表最后一个评论的时间
+}
+
 type ProductDetailReq struct {
 	Productid int64 `form:"productid"`
 }
@@ -155,103 +178,23 @@ type ProductDetailRsp struct {
 	Comments []*Comment `json:"comments"`
 }
 
-type UserRevAddr struct {
-	Id            int64  `json:"id"`
-	Uid           uint64 `json:"uid"`           //用户id
-	Name          string `json:"name"`          //收货人名称
-	Phone         string `json:"phone"`         //手机号
-	Isdefault     bool   `json:"isdefault"`     //是否为默认地址
-	Postcode      string `json:"postcode"`      //邮政编码
-	Province      string `json:"province"`      //省份/直辖市
-	City          string `json:"city"`          //城市
-	Region        string `json:"region"`        //区
-	DetailAddress string `json:"detailaddress"` //详细地址(街道)
-	Isdelete      bool   `json:"isdelete"`      //是否删除
-	CreateTime    int64  `json:"createtime"`    //数据创建时间
-	UpdateTime    int64  `json:"updatetime"`    //数据更新时间
+type RecommendReq struct {
+	Cursor    int64 `json:"cursor"`        // 时间
+	Ps        int32 `json:"ps,default=20"` // 每页大小
+	Productid int64 `json:"productid"`     // 每页大小
 }
 
-type UserRevAddrListReq struct {
+type RecommendRsp struct {
+	Products      []*Product `json:"products"`
+	IsEnd         bool       `json:"isEnd"`         // 是否最后一页
+	Recommendtime int64      `json:"recommendtime"` // 商品列表最后一个商品的推荐时间
+	Productid     int64      `json:"productid"`     // 每页大小
 }
 
-type UserRevAddrListRes struct {
-	List []UserRevAddr `json:"list"`
-}
-
-type UserRevAddrAddReq struct {
-	Name          string `json:"name"`          //收货人名称
-	Phone         string `json:"phone"`         //手机号
-	Isdefault     bool   `json:"isdefault"`     //是否为默认地址
-	Postcode      string `json:"postcode"`      //邮政编码
-	Province      string `json:"province"`      //省份/直辖市
-	City          string `json:"city"`          //城市
-	Region        string `json:"region"`        //区
-	DetailAddress string `json:"detailaddress"` //详细地址(街道)
-}
-
-type UserRevAddrAddRes struct {
-}
-
-type UserRevAddrEditReq struct {
-	Id            int64  `json:"id"`
-	Name          string `json:"name"`          //收货人名称
-	Phone         string `json:"phone"`         //手机号
-	IsDefault     bool   `json:"isdefault"`     //是否为默认地址
-	PostCode      string `json:"postcode"`      //邮政编码
-	Province      string `json:"province"`      //省份/直辖市
-	City          string `json:"city"`          //城市
-	Region        string `json:"region"`        //区
-	DetailAddress string `json:"detailaddress"` //详细地址(街道)
-}
-
-type UserRevAddrEditRes struct {
-}
-
-type UserRevAddrDelReq struct {
-	Id int64 `json:"id"`
-}
-
-type UserRevAddrDelRes struct {
-}
-
-type UserInfo struct {
-	Id         int64  `json:"id"`
-	Username   string `json:"username"`   //用户名
-	Password   string `json:"password"`   //用户密码，MD5加密
-	Phone      string `json:"phone"`      //手机号
-	Question   string `json:"question"`   //找回密码问题
-	Answer     string `json:"answer"`     //找回密码答案
-	CreateTime int64  `json:"createtime"` //创建时间
-	UpdateTime int64  `json:"updatetime"` //更新时间
-	Name       string `json:"name"`       //姓名
-	Nick       string `json:"nick"`       //昵称
-	Sex        string `json:"sex"`        //性别
-}
-
-type LoginReq struct {
-	Username string `json:"username"` //用户名
-	Password string `json:"password"` //密码
-}
-
-type LoginRes struct {
-	AccessToken  string `json:"accessToken"`  //tocken
-	AccessExpire int64  `json:"accessExpire"` //过期时间
-}
-
-type UserInfoReq struct {
-}
-
-type UserInfoRes struct {
-	UserInfo UserInfo `json:"userInfo"` //用户信息
-}
-
-type UserRegisterReq struct {
-	Username string `json:"username"` //用户名
-	Phone    string `json:"phone"`    //手机号
-	Password string `json:"password"` //密码
-}
-
-type UserRegisterRes struct {
+type User struct {
+	Id     int64  `json:"id"`     // 用户ID
+	Name   string `json:"name"`   // 用户名
+	Avatar string `json:"avatar"` // 头像
 }
 
 type UserCollectionAddReq struct {
@@ -275,34 +218,91 @@ type UserCollectionListRes struct {
 	Productid []int64 `json:"productid"` // 商品id
 }
 
-type Orders struct {
-	Id          int64   `json:"id"`          //订单id
-	Ordernum    string  `json:"ordernum"`    //订单号
-	Userid      uint64  `json:"userid"`      //用户id
-	Shoppingid  int64   `json:"shoppingid"`  //收货信息表id
-	Payment     float64 `json:"payment"`     //实际付款金额,单位是元,保留两位小数
-	Paymenttype int32   `json:"paymenttype"` //支付类型,1-在线支付
-	Postage     float64 `json:"postage"`     //运费,单位是元
-	Status      int32   `json:"status"`      //订单状态:0-已取消-10-未付款，20-已付款，30-待发货 40-待收货，50-交易成功，60-交易关闭
-	Createtime  int64   `json:"createtime"`  //创建时间
-	Updatetime  int64   `json:"updatetime"`  //更新时间
+type UserInfo struct {
+	Id         int64  `json:"id"`
+	Username   string `json:"username"`   //用户名
+	Password   string `json:"password"`   //用户密码，MD5加密
+	Phone      string `json:"phone"`      //手机号
+	Question   string `json:"question"`   //找回密码问题
+	Answer     string `json:"answer"`     //找回密码答案
+	CreateTime int64  `json:"createtime"` //创建时间
+	UpdateTime int64  `json:"updatetime"` //更新时间
+	Name       string `json:"name"`       //姓名
+	Nick       string `json:"nick"`       //昵称
+	Sex        string `json:"sex"`        //性别
 }
 
-type OrderAddReq struct {
-	RevAddrId int64   `json:"RevAddrId"` //用户收货地址表id
-	Postage   float64 `json:"postage"`   //运费,单位是元
-	Productid int64   `json:"productid"` //商品id
-	Quantity  int64   `json:"quantity"`  //商品数量
+type UserInfoReq struct {
 }
 
-type OrderAddRsp struct {
-	Ordernum string `json:"ordernum"` //订单号
+type UserInfoRes struct {
+	UserInfo UserInfo `json:"userInfo"` //用户信息
 }
 
-type OrderInfoReq struct {
-	Ordernum string `json:"ordernum"` //订单号
+type UserRegisterReq struct {
+	Username string `json:"username"` //用户名
+	Phone    string `json:"phone"`    //手机号
+	Password string `json:"password"` //密码
 }
 
-type OrderInfoResp struct {
-	OrderInfo Orders `json:"orderInfo"` //订单详情
+type UserRegisterRes struct {
+}
+
+type UserRevAddr struct {
+	Id            int64  `json:"id"`
+	Uid           uint64 `json:"uid"`           //用户id
+	Name          string `json:"name"`          //收货人名称
+	Phone         string `json:"phone"`         //手机号
+	Isdefault     bool   `json:"isdefault"`     //是否为默认地址
+	Postcode      string `json:"postcode"`      //邮政编码
+	Province      string `json:"province"`      //省份/直辖市
+	City          string `json:"city"`          //城市
+	Region        string `json:"region"`        //区
+	DetailAddress string `json:"detailaddress"` //详细地址(街道)
+	Isdelete      bool   `json:"isdelete"`      //是否删除
+	CreateTime    int64  `json:"createtime"`    //数据创建时间
+	UpdateTime    int64  `json:"updatetime"`    //数据更新时间
+}
+
+type UserRevAddrAddReq struct {
+	Name          string `json:"name"`          //收货人名称
+	Phone         string `json:"phone"`         //手机号
+	Isdefault     bool   `json:"isdefault"`     //是否为默认地址
+	Postcode      string `json:"postcode"`      //邮政编码
+	Province      string `json:"province"`      //省份/直辖市
+	City          string `json:"city"`          //城市
+	Region        string `json:"region"`        //区
+	DetailAddress string `json:"detailaddress"` //详细地址(街道)
+}
+
+type UserRevAddrAddRes struct {
+}
+
+type UserRevAddrDelReq struct {
+	Id int64 `json:"id"`
+}
+
+type UserRevAddrDelRes struct {
+}
+
+type UserRevAddrEditReq struct {
+	Id            int64  `json:"id"`
+	Name          string `json:"name"`          //收货人名称
+	Phone         string `json:"phone"`         //手机号
+	IsDefault     bool   `json:"isdefault"`     //是否为默认地址
+	PostCode      string `json:"postcode"`      //邮政编码
+	Province      string `json:"province"`      //省份/直辖市
+	City          string `json:"city"`          //城市
+	Region        string `json:"region"`        //区
+	DetailAddress string `json:"detailaddress"` //详细地址(街道)
+}
+
+type UserRevAddrEditRes struct {
+}
+
+type UserRevAddrListReq struct {
+}
+
+type UserRevAddrListRes struct {
+	List []UserRevAddr `json:"list"`
 }

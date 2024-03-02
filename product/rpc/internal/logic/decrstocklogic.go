@@ -46,7 +46,8 @@ func (l *DecrStockLogic) DecrStock(in *product.DecrStockReq) (*product.DecrStock
 	// 开启子事务屏障
     err = barrier.CallWithDB(db,func(tx *sql.Tx) error {
 		//更新产品库存
-		result, err :=  l.svcCtx.ProductModel.TxUpdateStock(tx,in.Id,-1)
+		var num int= 0-int(in.Num)
+		result, err :=  l.svcCtx.ProductModel.TxUpdateStock(tx,in.Id,num)
 		if err != nil {
 			l.Logger.Errorf("udpate product stock err!:%v",err)
 			return xerr.NewErrCode(xerr.TransactionError)

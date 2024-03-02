@@ -78,7 +78,7 @@ message CheckAndUpdateStockRsp {
 
 message DecrStockReq {
     int64 id = 1;
-    int64 num = 2;
+    int32 num = 2;
 }
 
 message DecrStockRsp {

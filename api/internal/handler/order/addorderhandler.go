@@ -9,7 +9,7 @@ import (
 	"hnchain/api/internal/types"
 )
 
-func AddOrderHanderHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func AddOrderHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.OrderAddReq
 		if err := httpx.Parse(r, &req); err != nil {
@@ -17,8 +17,8 @@ func AddOrderHanderHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		l := order.NewAddOrderHanderLogic(r.Context(), svcCtx)
-		resp, err := l.AddOrderHander(&req)
+		l := order.NewAddOrderLogic(r.Context(), svcCtx)
+		resp, err := l.AddOrder(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
